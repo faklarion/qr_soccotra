@@ -1,6 +1,6 @@
-# qr_soccotra
+# QR Soccotra
 
-A new Flutter project.
+A new Flutter project. Aplikasi untuk cetak QR Menu pesan mandiri customer.
 
 ## Getting Started
 
