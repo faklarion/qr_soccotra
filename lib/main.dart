@@ -177,29 +177,37 @@ class _TableGridScreenState extends State<TableGridScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          mainAxisSize:
-              MainAxisSize.max, // Memastikan Row menggunakan seluruh lebar
+        title: Stack(
           children: [
-            const Spacer(), // Spacer sebelum logo
-            Image.asset(
-              'assets/images/soccotra.png', // Path ke logo
-              height: 30, // Sesuaikan ukuran logo
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    top: 5.0), // Tambahkan padding jika diperlukan
+                child: Image.asset(
+                  'assets/images/soccotra_logo.png',
+                  height: 30, // Sesuaikan ukuran logo
+                ),
+              ),
             ),
-            const Spacer(), // Spacer setelah logo
+            Positioned(
+              right: 0,
+              child: IconButton(
+                icon: Image.asset(
+                  'assets/images/connect.png',
+                  width: 16,
+                  height: 16,
+                ),
+                onPressed: _devices.isNotEmpty
+                    ? _showDeviceSelectionDialog
+                    : () {
+                        _showErrorDialog(
+                            'No devices found. Please pair your printer.');
+                      },
+              ),
+            ),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.print),
-            onPressed: _devices.isNotEmpty
-                ? _showDeviceSelectionDialog
-                : () {
-                    _showErrorDialog(
-                        'No devices found. Please pair your printer.');
-                  },
-          ),
-        ],
+        centerTitle: true, // Ini menjaga agar posisi title di tengah.
       ),
       body: Column(
         children: [
@@ -236,7 +244,12 @@ class _TableGridScreenState extends State<TableGridScreen> {
                                 horizontal: 40, vertical: 20),
                             textStyle: const TextStyle(fontSize: 16),
                           ),
-                          child: const Text('Print'),
+                          child: Column(
+                            children: [
+                              const Text('Print'),
+                              Text('Table $_selectedImage'),
+                            ],
+                          ),
                         ),
                     ],
                   ),
