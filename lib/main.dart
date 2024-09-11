@@ -74,7 +74,7 @@ class _TableGridScreenState extends State<TableGridScreen> {
 
     try {
       bool? isConnected = await printer.isConnected;
-      if (isConnected != null && isConnected) {
+      if (isConnected == true) {
         // Load gambar dari assets untuk logo
         String logoFilePath = 'assets/images/soccotra.png';
         ByteData logoImageBytes = await rootBundle.load(logoFilePath);
