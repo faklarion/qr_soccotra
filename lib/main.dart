@@ -116,8 +116,10 @@ class _TableGridScreenState extends State<TableGridScreen> {
           printer.printNewLine();
           printer.paperCut(); // Memotong kertas (jika printer mendukung)
         } else {
-          _showErrorDialog('Failed to load images.');
+          throw Exception('Failed to load images.');
         }
+      } else {
+        throw Exception('Printer is not connected.');
       }
     } catch (e) {
       print("Error printing: $e");
@@ -175,6 +177,7 @@ class _TableGridScreenState extends State<TableGridScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool _isPressed = false;
     return Scaffold(
       appBar: AppBar(
         title: Stack(
@@ -237,17 +240,53 @@ class _TableGridScreenState extends State<TableGridScreen> {
                       if (_selectedImage.isNotEmpty)
                         ElevatedButton(
                           onPressed: () async {
+                            setState(() {
+                              _isPressed = true; // Tombol sedang ditekan
+                            });
+
                             await _printImage();
+
+                            setState(() {
+                              _isPressed =
+                                  false; // Kembali ke status normal setelah selesai
+                            });
                           },
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 40, vertical: 20),
-                            textStyle: const TextStyle(fontSize: 16),
+                          style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.resolveWith<Color>(
+                                    (states) {
+                              if (states.contains(MaterialState.pressed)) {
+                                return const Color.fromARGB(
+                                    255, 164, 165, 179); // Warna saat ditekan
+                              }
+                              return Colors.white; // Warna default (putih)
+                            }),
+                            foregroundColor:
+                                MaterialStateProperty.resolveWith<Color>(
+                                    (states) {
+                              if (states.contains(MaterialState.pressed)) {
+                                return Colors.white; // Warna teks saat ditekan
+                              }
+                              return Colors.black; // Warna teks default (hitam)
+                            }),
+                            padding: MaterialStateProperty.all(
+                                const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 15)),
+                            side: MaterialStateProperty.all(BorderSide(
+                                color: Colors.blue)), // Border tetap biru
+                            textStyle: MaterialStateProperty.all(
+                                const TextStyle(fontSize: 12)),
+                            elevation:
+                                MaterialStateProperty.resolveWith<double>(
+                                    (states) {
+                              return states.contains(MaterialState.pressed)
+                                  ? 5
+                                  : 0; // Elevation lebih tinggi saat ditekan
+                            }),
                           ),
                           child: Column(
                             children: [
-                              const Text('Print'),
-                              Text('Table $_selectedImage'),
+                              Text('Print Table $_selectedImage'),
                             ],
                           ),
                         ),
@@ -303,12 +342,37 @@ class _TableGridScreenState extends State<TableGridScreen> {
                         borderRadius: BorderRadius.circular(15.0),
                       ),
                     ),
-                    child: Text(
-                      isVIP ? 'VIP $tableNumber' : 'Table $tableNumber',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (isVIP)
+                            Text(
+                              'VIP',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            )
+                          else
+                            Text(
+                              'Table',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          Text(
+                            '$tableNumber',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   );
